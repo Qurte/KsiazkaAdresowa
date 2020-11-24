@@ -1,0 +1,4 @@
+1|1|Dawid|Kachniarz|dawid@op/pl|65552522|Krakow|
+2|1|Lukasz|Kruczek|kruki@we.pl|2516|Koksy|
+3|1|Popek|mosnter|popus@op.pl|745616|Szczwano|
+4|5|Korek|Morek|Korek@op.pl|785263547|asffasf|

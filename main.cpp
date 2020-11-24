@@ -1,6 +1,7 @@
 #include <iostream>
 #include <windows.h>
 #include <cstdlib>
+#include <cstdio>
 #include <fstream>
 #include <vector>
 #include <algorithm>
@@ -9,19 +10,28 @@ using namespace std;
 struct Przyjaciel
 {
     int id;
+    int idUzytkownika;
     string imie,nazwisko,email,nrTelefonu,adres;
 
 };
-int wczytajDaneZPliku (vector<Przyjaciel> &przyjaciele)
+struct Uzytkownik
+{
+    int idUzytkownika;
+    string login, haslo;
+};
+int wczytajDaneZPliku (vector<Przyjaciel> &przyjaciele, int idUzytkownika)
 {
     fstream BazaZnajomych;
     string liniaOdczytywanaZPliku;
-    string buforDanych;
+    string buforDanych, imie, nazwisko, email, nrTelefonu, adres;
+    int id;
+    int idUzytkownikaWPliku;
     int dlugoscLinii;
     int nrWystapieniaKreski = 1;
     int nrLinii = 1;
     int pozycjaKreski = 0;
     int nrPrzyjaciela = 0;
+    int nrPrzyjacielaUzytkownika = przyjaciele.size();
     BazaZnajomych.open("ListaZnajomych.txt",ios::in);
     if(BazaZnajomych.good() == false)
     {
@@ -29,7 +39,6 @@ int wczytajDaneZPliku (vector<Przyjaciel> &przyjaciele)
     }
     while(getline(BazaZnajomych,liniaOdczytywanaZPliku))
     {
-        przyjaciele.push_back(Przyjaciel());
         dlugoscLinii = liniaOdczytywanaZPliku.length();
         for (int i = 0; i < dlugoscLinii; i++)
         {
@@ -40,36 +49,53 @@ int wczytajDaneZPliku (vector<Przyjaciel> &przyjaciele)
                 case 1:
                     buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
                     pozycjaKreski = i + 1;
-                    przyjaciele[nrPrzyjaciela].id = atoi(buforDanych.c_str());
+                    id = atoi(buforDanych.c_str());
                     break;
-                case 2:
+                 case 2:
                     buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
-                    pozycjaKreski = i+1;
-                    przyjaciele[nrPrzyjaciela].imie = buforDanych;
+                    pozycjaKreski = i + 1;
+                    idUzytkownikaWPliku = atoi(buforDanych.c_str());
                     break;
                 case 3:
                     buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
-                    pozycjaKreski = i + 1;
-                    przyjaciele[nrPrzyjaciela].nazwisko = buforDanych;
+                    pozycjaKreski = i+1;
+                    imie = buforDanych;
                     break;
                 case 4:
                     buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
                     pozycjaKreski = i + 1;
-                    przyjaciele[nrPrzyjaciela].email = buforDanych;
+                    nazwisko = buforDanych;
                     break;
                 case 5:
                     buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
                     pozycjaKreski = i + 1;
-                    przyjaciele[nrPrzyjaciela].nrTelefonu = buforDanych;
+                    email = buforDanych;
                     break;
                 case 6:
                     buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
                     pozycjaKreski = i + 1;
-                    przyjaciele[nrPrzyjaciela].adres = buforDanych;
+                    nrTelefonu = buforDanych;
+                    break;
+                case 7:
+                    buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                    pozycjaKreski = i + 1;
+                    adres = buforDanych;
                     break;
                 }
                 nrWystapieniaKreski ++;
             }
+        }
+        if (idUzytkownikaWPliku == idUzytkownika)
+        {
+            przyjaciele.push_back(Przyjaciel());
+            przyjaciele[nrPrzyjacielaUzytkownika].id = id;
+            przyjaciele[nrPrzyjacielaUzytkownika].idUzytkownika = idUzytkownika;
+            przyjaciele[nrPrzyjacielaUzytkownika].imie = imie;
+            przyjaciele[nrPrzyjacielaUzytkownika].nazwisko = nazwisko;
+            przyjaciele[nrPrzyjacielaUzytkownika].email = email;
+            przyjaciele[nrPrzyjacielaUzytkownika].nrTelefonu = nrTelefonu;
+            przyjaciele[nrPrzyjacielaUzytkownika].adres = adres;
+            nrPrzyjacielaUzytkownika++;
         }
         pozycjaKreski = 0;
         nrWystapieniaKreski = 1;
@@ -79,29 +105,85 @@ int wczytajDaneZPliku (vector<Przyjaciel> &przyjaciele)
     return nrPrzyjaciela;
 
 }
-int dodajPrzyjacielaDoBazy(vector<Przyjaciel> &przyjaciele,int IloscZnajomych)
+int wczytajDaneZPliku (vector<Uzytkownik> &uzytkownicy)
+{
+    fstream BazaUzytkownikow;
+    string liniaOdczytywanaZPliku;
+    string buforDanych;
+    int dlugoscLinii;
+    int nrWystapieniaKreski = 1;
+    int nrLinii = 1;
+    int pozycjaKreski = 0;
+    int nrUzytkownika = 0;
+    BazaUzytkownikow.open("ListaUzytkownikow.txt",ios::in);
+    if(BazaUzytkownikow.good() == false)
+    {
+        return 0;
+    }
+    while(getline(BazaUzytkownikow,liniaOdczytywanaZPliku))
+    {
+        uzytkownicy.push_back(Uzytkownik());
+        dlugoscLinii = liniaOdczytywanaZPliku.length();
+        for (int i = 0; i < dlugoscLinii; i++)
+        {
+            if (liniaOdczytywanaZPliku[i] == '|')
+            {
+                switch(nrWystapieniaKreski)
+                {
+                case 1:
+                    buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                    pozycjaKreski = i + 1;
+                    uzytkownicy[nrUzytkownika].idUzytkownika = atoi(buforDanych.c_str());
+                    break;
+                case 2:
+                    buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                    pozycjaKreski = i+1;
+                    uzytkownicy[nrUzytkownika].login = buforDanych;
+                    break;
+                case 3:
+                    buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                    pozycjaKreski = i + 1;
+                    uzytkownicy[nrUzytkownika].haslo = buforDanych;
+                    break;
+                }
+                nrWystapieniaKreski ++;
+            }
+        }
+        pozycjaKreski = 0;
+        nrWystapieniaKreski = 1;
+        nrUzytkownika ++;
+    }
+    BazaUzytkownikow.close();
+    return nrUzytkownika;
+
+}
+int dodajPrzyjacielaDoBazy(vector<Przyjaciel> &przyjaciele,int IloscZnajomych, int idUzytkownika)
 {
     string imie, nazwisko, email, nrTelefonu, adres;
     int id = IloscZnajomych + 1;
-    bool CzyZnalazlo = false;
-    for (int i = 0; i < IloscZnajomych; i++)
+    if (IloscZnajomych == przyjaciele.size())
     {
-        for (int j = 0; j <= IloscZnajomych; j++)
+        bool CzyZnalazlo = false;
+        for (int i = 0; i < IloscZnajomych; i++)
         {
-            if(przyjaciele[j].id == i+1)
+            for (int j = 0; j <= IloscZnajomych; j++)
             {
-                CzyZnalazlo = true;
+                if(przyjaciele[j].id == i+1)
+                {
+                    CzyZnalazlo = true;
+                    break;
+                }
+                else
+                    CzyZnalazlo = false;
+            }
+            if (CzyZnalazlo == false)
+            {
+                id = i+1;
                 break;
             }
-            else
-                CzyZnalazlo = false;
-        }
-        if (CzyZnalazlo == false)
-        {
-            id = i+1;
-            break;
         }
     }
+
     cout << "podaj imie znajomego" << endl;
     cin >> imie;
 
@@ -118,17 +200,20 @@ int dodajPrzyjacielaDoBazy(vector<Przyjaciel> &przyjaciele,int IloscZnajomych)
     cout << "podaj adres znajomego" << endl;
     getline(cin,adres);
 
+    int IloscZnajomychUTegoUzytkownika = przyjaciele.size();
     przyjaciele.push_back(Przyjaciel());
-    przyjaciele[IloscZnajomych].id =  id;
-    przyjaciele[IloscZnajomych].imie =  imie;
-    przyjaciele[IloscZnajomych].nazwisko = nazwisko;
-    przyjaciele[IloscZnajomych].email = email;
-    przyjaciele[IloscZnajomych].nrTelefonu = nrTelefonu;
-    przyjaciele[IloscZnajomych].adres = adres;
+    przyjaciele[IloscZnajomychUTegoUzytkownika].id =  id;
+    przyjaciele[IloscZnajomychUTegoUzytkownika].idUzytkownika =  idUzytkownika;
+    przyjaciele[IloscZnajomychUTegoUzytkownika].imie =  imie;
+    przyjaciele[IloscZnajomychUTegoUzytkownika].nazwisko = nazwisko;
+    przyjaciele[IloscZnajomychUTegoUzytkownika].email = email;
+    przyjaciele[IloscZnajomychUTegoUzytkownika].nrTelefonu = nrTelefonu;
+    przyjaciele[IloscZnajomychUTegoUzytkownika].adres = adres;
 
     fstream BazaZnajomych;
     BazaZnajomych.open("ListaZnajomych.txt",ios::out | ios::app);
     BazaZnajomych << id << "|";
+    BazaZnajomych << idUzytkownika << "|";
     BazaZnajomych << imie << "|";
     BazaZnajomych << nazwisko << "|";
     BazaZnajomych << email << "|";
@@ -216,8 +301,9 @@ void wyszukajPrzyjaciela(vector<Przyjaciel> &przyjaciele,int iloscZnajomych)
         break;
     }
 }
-void wyswietlWszystkichZnajomych(vector<Przyjaciel> &przyjaciele,int iloscZnajomych)
+void wyswietlWszystkichZnajomych(vector<Przyjaciel> &przyjaciele)
 {
+    int iloscZnajomych = przyjaciele.size();
     for(int i = 0; i < iloscZnajomych; i++)
     {
         cout << "Id: " << przyjaciele[i].id << endl;
@@ -229,10 +315,15 @@ void wyswietlWszystkichZnajomych(vector<Przyjaciel> &przyjaciele,int iloscZnajom
     }
     system("pause");
 }
-void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
+void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int idUzytkownika)
 {
     int id;
-    int IloscZnalezionychOsob;
+    int idPrzyjacielaWPliku;
+    int idUzytkownikaWPliku;
+    int dlugoscLinii;
+    int nrPrzyjaciela;
+    int iloscZnajomych = przyjaciele.size() - 1;
+    int IloscZnalezionychOsob = 0;
     char wybor;
     cout << "podaj Id znajomego: ";
     cin >> id;
@@ -247,11 +338,13 @@ void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
             cout << "email: " << przyjaciele[i].email << endl;
             cout << "Nr. telefonu: " << przyjaciele[i].nrTelefonu << endl;
             cout << "Adres: " << przyjaciele[i].adres << endl << endl;
+            nrPrzyjaciela = i;
         }
     }
     if(IloscZnalezionychOsob == 0)
     {
         cout << "Nie masz znajomych o podanym nr Id" << endl;
+        Sleep(1500);
     }
     else
     {
@@ -263,7 +356,6 @@ void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
         cout << "5. Adres" << endl;
         cin>>wybor;
 
-        id-=1;
         switch(wybor)
         {
         case '1':
@@ -271,7 +363,7 @@ void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
             string noweImie;
             cout << "Podaj nowe imie: " << endl;
             cin>>noweImie;
-            przyjaciele[id].imie = noweImie;
+            przyjaciele[nrPrzyjaciela].imie = noweImie;
             break;
         }
         case '2':
@@ -279,7 +371,7 @@ void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
             string noweNazwisko;
             cout << "Podaj nowe Nazwisko: " << endl;
             cin>>noweNazwisko;
-            przyjaciele[id].nazwisko = noweNazwisko;
+            przyjaciele[nrPrzyjaciela].nazwisko = noweNazwisko;
             break;
         }
         case '3':
@@ -287,7 +379,7 @@ void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
             string nowyEmail;
             cout << "Podaj nowy email: " << endl;
             cin>>nowyEmail;
-            przyjaciele[id].email = nowyEmail;
+            przyjaciele[nrPrzyjaciela].email = nowyEmail;
             break;
         }
         case '4':
@@ -295,7 +387,7 @@ void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
             string nowyNrTelefonu;
             cout << "Podaj nowy nr. telefonu: " << endl;
             cin>>nowyNrTelefonu;
-            przyjaciele[id].nrTelefonu = nowyNrTelefonu;
+            przyjaciele[nrPrzyjaciela].nrTelefonu = nowyNrTelefonu;
             break;
         }
 
@@ -304,29 +396,104 @@ void edytujDaneZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
             string nowyAdres;
             cout << "Podaj nowy adres: " << endl;
             cin>>nowyAdres;
-            przyjaciele[id].adres = nowyAdres;
+            przyjaciele[nrPrzyjaciela].adres = nowyAdres;
             break;
         }
         }
         fstream BazaZnajomych;
-        BazaZnajomych.open("ListaZnajomych.txt",ios::out);
-        for (int i = 0; i < iloscZnajomych; i++)
+        BazaZnajomych.open("ListaZnajomych.txt",ios::in);
+        string liniaOdczytywanaZPliku, buforDanych;
+        string imie, nazwisko, email, nrTelefonu, adres;
+        int nrWystapieniaKreski = 1;
+        int pozycjaKreski = 0;
+        while(getline(BazaZnajomych,liniaOdczytywanaZPliku))
         {
-            BazaZnajomych << przyjaciele[i].id << "|";
-            BazaZnajomych << przyjaciele[i].imie << "|";
-            BazaZnajomych << przyjaciele[i].nazwisko << "|";
-            BazaZnajomych << przyjaciele[i].email << "|";
-            BazaZnajomych << przyjaciele[i].nrTelefonu << "|";
-            BazaZnajomych << przyjaciele[i].adres << "|";
-            BazaZnajomych << endl;
+            dlugoscLinii = liniaOdczytywanaZPliku.length();
+            for (int i = 0; i < dlugoscLinii; i++)
+            {
+                if (liniaOdczytywanaZPliku[i] == '|')
+                {
+                    switch(nrWystapieniaKreski)
+                    {
+                    case 1:
+                        buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                        pozycjaKreski = i + 1;
+                        idPrzyjacielaWPliku = atoi(buforDanych.c_str());
+                        break;
+                    case 2:
+                        buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                        pozycjaKreski = i + 1;
+                        idUzytkownikaWPliku = atoi(buforDanych.c_str());
+                        break;
+                    case 3:
+                        buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                        pozycjaKreski = i+1;
+                        imie = buforDanych;
+                        break;
+                    case 4:
+                        buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                        pozycjaKreski = i + 1;
+                        nazwisko = buforDanych;
+                        break;
+                    case 5:
+                        buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                        pozycjaKreski = i + 1;
+                        email = buforDanych;
+                        break;
+                    case 6:
+                        buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                        pozycjaKreski = i + 1;
+                        nrTelefonu = buforDanych;
+                        break;
+                    case 7:
+                        buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                        pozycjaKreski = i + 1;
+                        adres = buforDanych;
+                        break;
+                    }
+                    nrWystapieniaKreski ++;
+                }
+            }
+            fstream BazaZnajomychTymczasowa;
+            BazaZnajomychTymczasowa.open("ListaZnajomych_Tymczasowa.txt",ios::out | ios::app);
+            if (id == idPrzyjacielaWPliku)
+            {
+                BazaZnajomychTymczasowa << przyjaciele[nrPrzyjaciela].id << "|";
+                BazaZnajomychTymczasowa << przyjaciele[nrPrzyjaciela].idUzytkownika << "|";
+                BazaZnajomychTymczasowa << przyjaciele[nrPrzyjaciela].imie << "|";
+                BazaZnajomychTymczasowa << przyjaciele[nrPrzyjaciela].nazwisko << "|";
+                BazaZnajomychTymczasowa << przyjaciele[nrPrzyjaciela].email << "|";
+                BazaZnajomychTymczasowa << przyjaciele[nrPrzyjaciela].nrTelefonu << "|";
+                BazaZnajomychTymczasowa << przyjaciele[nrPrzyjaciela].adres << "|";
+                BazaZnajomychTymczasowa << endl;
+            }
+            else
+            {
+                BazaZnajomychTymczasowa << idPrzyjacielaWPliku << "|";
+                BazaZnajomychTymczasowa << idUzytkownikaWPliku<< "|";
+                BazaZnajomychTymczasowa << imie << "|";
+                BazaZnajomychTymczasowa << nazwisko << "|";
+                BazaZnajomychTymczasowa << email << "|";
+                BazaZnajomychTymczasowa << nrTelefonu << "|";
+                BazaZnajomychTymczasowa << adres << "|";
+                BazaZnajomychTymczasowa << endl;
+            }
+            BazaZnajomychTymczasowa.close();
+            pozycjaKreski = 0;
+            nrWystapieniaKreski = 1;
         }
         BazaZnajomych.close();
+        remove("ListaZnajomych.txt");
+        rename("ListaZnajomych_Tymczasowa.txt", "ListaZnajomych.txt");
+        cout << "Edycja znajomego przebiegla pomyslnie " << endl;
+        Sleep(1500);
     }
 }
-int usunZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
+int usunZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych, int idUzytkownika)
 {
     int id;
     char takLubNie;
+    int nrPrzyjaciela;
     int IloscZnalezionychOsob;
     cout << "podaj Id znajomego ktorego chcesz usunac: ";
     cin >> id;
@@ -341,6 +508,7 @@ int usunZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
             cout << "email: " << przyjaciele[i].email << endl;
             cout << "Nr. telefonu: " << przyjaciele[i].nrTelefonu << endl;
             cout << "Adres: " << przyjaciele[i].adres << endl << endl;
+            nrPrzyjaciela = i;
         }
     }
     if(IloscZnalezionychOsob == 0)
@@ -356,21 +524,92 @@ int usunZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
         else if (takLubNie == 't')
         {
             auto itr = przyjaciele.begin() + id - 1;
-            przyjaciele.erase(itr);
+            int dlugoscLinii;
+            int idPrzyjacielaWPliku;
+            int idUzytkownikaWPliku;
             iloscZnajomych -= 1;
             fstream BazaZnajomych;
-            BazaZnajomych.open("ListaZnajomych.txt",ios::out);
-            for (int i = 0; i < iloscZnajomych; i++)
+            BazaZnajomych.open("ListaZnajomych.txt",ios::in);
+            string liniaOdczytywanaZPliku, buforDanych;
+            string imie, nazwisko, email, nrTelefonu, adres;
+            int nrWystapieniaKreski = 1;
+            int pozycjaKreski = 0;
+            while(getline(BazaZnajomych,liniaOdczytywanaZPliku))
             {
-                BazaZnajomych << przyjaciele[i].id << "|";
-                BazaZnajomych << przyjaciele[i].imie << "|";
-                BazaZnajomych << przyjaciele[i].nazwisko << "|";
-                BazaZnajomych << przyjaciele[i].email << "|";
-                BazaZnajomych << przyjaciele[i].nrTelefonu << "|";
-                BazaZnajomych << przyjaciele[i].adres << "|";
-                BazaZnajomych << endl;
+                dlugoscLinii = liniaOdczytywanaZPliku.length();
+                for (int i = 0; i < dlugoscLinii; i++)
+                {
+                    if (liniaOdczytywanaZPliku[i] == '|')
+                    {
+                        switch(nrWystapieniaKreski)
+                        {
+                        case 1:
+                            buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                            pozycjaKreski = i + 1;
+                            idPrzyjacielaWPliku = atoi(buforDanych.c_str());
+                            break;
+                        case 2:
+                            buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                            pozycjaKreski = i + 1;
+                            idUzytkownikaWPliku = atoi(buforDanych.c_str());
+                            break;
+                        case 3:
+                            buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                            pozycjaKreski = i+1;
+                            imie = buforDanych;
+                            break;
+                        case 4:
+                            buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                            pozycjaKreski = i + 1;
+                            nazwisko = buforDanych;
+                            break;
+                        case 5:
+                            buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                            pozycjaKreski = i + 1;
+                            email = buforDanych;
+                            break;
+                        case 6:
+                            buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                            pozycjaKreski = i + 1;
+                            nrTelefonu = buforDanych;
+                            break;
+                        case 7:
+                            buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
+                            pozycjaKreski = i + 1;
+                            adres = buforDanych;
+                            break;
+                        }
+                        nrWystapieniaKreski ++;
+                    }
+                }
+                fstream BazaZnajomychTymczasowa;
+                BazaZnajomychTymczasowa.open("ListaZnajomych_Tymczasowa.txt",ios::out | ios::app);
+                if (id == idPrzyjacielaWPliku)
+                {
+
+                }
+                else
+                {
+                    BazaZnajomychTymczasowa << idPrzyjacielaWPliku << "|";
+                    BazaZnajomychTymczasowa << idUzytkownikaWPliku<< "|";
+                    BazaZnajomychTymczasowa << imie << "|";
+                    BazaZnajomychTymczasowa << nazwisko << "|";
+                    BazaZnajomychTymczasowa << email << "|";
+                    BazaZnajomychTymczasowa << nrTelefonu << "|";
+                    BazaZnajomychTymczasowa << adres << "|";
+                    BazaZnajomychTymczasowa << endl;
+                }
+                BazaZnajomychTymczasowa.close();
+                pozycjaKreski = 0;
+                nrWystapieniaKreski = 1;
             }
             BazaZnajomych.close();
+            przyjaciele.erase(itr);
+            remove("ListaZnajomych.txt");
+            rename("ListaZnajomych_Tymczasowa.txt", "ListaZnajomych.txt");
+
+            cout << "usuwanie znajomego przebieg³o pomyslnie" << endl;
+            Sleep(1500);
             return iloscZnajomych;
 
         }
@@ -378,49 +617,152 @@ int usunZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych)
             cout << "nie podales zadnej z opcji" << endl;
     }
 }
+int zarejestruj (vector <Uzytkownik> &uzytkownicy, int iloscUzytkownikow)
+{
+    string login, haslo;
+    int idUzytkownika;
+    cout << "Podaj login: " << endl;
+    cin >> login;
+    for(int i = 0; i < iloscUzytkownikow; i++)
+    {
+        if(uzytkownicy[i].login == login)
+        {
+            cout << "taki uzytkownik juz istnieje, podaj inny login" <<endl;
+            cin >> login;
+            i = -1;
+        }
+    }
+
+    cout << "Podaj haslo: " << endl;
+    cin >> haslo;
+    idUzytkownika = iloscUzytkownikow + 1;
+
+    uzytkownicy.push_back(Uzytkownik());
+    uzytkownicy[iloscUzytkownikow].idUzytkownika = idUzytkownika;
+    uzytkownicy[iloscUzytkownikow].login = login;
+    uzytkownicy[iloscUzytkownikow].haslo = haslo;
+
+    fstream BazaUzytkownikow;
+    BazaUzytkownikow.open("ListaUzytkownikow.txt",ios::out | ios::app);
+    BazaUzytkownikow << idUzytkownika << "|";
+    BazaUzytkownikow << login << "|";
+    BazaUzytkownikow << haslo << "|" << endl;
+    BazaUzytkownikow.close();
+
+    cout << "Rejsetracja przebiegla pomyslnie" << endl;
+    Sleep(1500);
+
+    return iloscUzytkownikow +1;
+}
+void zaloguj (vector <Uzytkownik> &uzytkownicy, int iloscUzytkownikow)
+{
+    string login, haslo;
+    int idUzytkownika = 0;
+    bool CzyIstniejeTakiLogin = false;
+    cout << "podaj login" << endl;
+    cin >> login;
+    for(int i = 0; i < iloscUzytkownikow; i++)
+    {
+        if(uzytkownicy[i].login == login)
+        {
+            CzyIstniejeTakiLogin = true;
+            idUzytkownika = uzytkownicy[i].idUzytkownika;
+            break;
+        }
+    }
+    if (CzyIstniejeTakiLogin == false)
+    {
+        cout << "Nie ma takiego uzytkownika" << endl;
+    }
+    else
+    {
+        cout << "Podaj haslo: " << endl;
+        cin >> haslo;
+        if (uzytkownicy[idUzytkownika - 1].haslo != haslo)
+        {
+            cout << "haslo nie poprawne" << endl;
+        }
+        else
+        {
+            vector <Przyjaciel> przyjaciele;
+            int IloscZnajomych = 0;
+            IloscZnajomych = wczytajDaneZPliku(przyjaciele, idUzytkownika);
+            char wybor;
+            cout << "Zalogowales sie poprawnie" << endl;
+            Sleep(1500);
+            while (1)
+            {
+                system("cls");
+                cout << "*************** MENU GLOWNE ***************" << endl;
+                cout << "1. Zapisz znajomego" << endl;
+                cout << "2. Wyszukaj znajomego" << endl;
+                cout << "3. Wyswietl wszystkich znajomych" << endl;
+                cout << "4. Edytuj dane znajomego" << endl;
+                cout << "5. Usun znajomego" << endl;
+                cout << "6. Wyloguj" << endl;
+                cin >> wybor;
+
+                switch(wybor)
+                {
+                case '1':
+                    IloscZnajomych = dodajPrzyjacielaDoBazy(przyjaciele, IloscZnajomych, idUzytkownika);
+                    break;
+                case '2':
+                    wyszukajPrzyjaciela(przyjaciele, IloscZnajomych);
+                    break;
+                case '3':
+                    wyswietlWszystkichZnajomych(przyjaciele);
+                    break;
+                case '4':
+                    edytujDaneZnajomego(przyjaciele, idUzytkownika);
+                    break;
+                case '5':
+                    IloscZnajomych = usunZnajomego(przyjaciele, IloscZnajomych, idUzytkownika);
+                    break;
+                case '6':
+                    return;
+                    break;
+                default:
+                    cout << "Nie podales zadnej opcji z Menu" << endl;
+                    break;
+                }
+            }
+        }
+    }
+    cout << endl << "logowanie nie powiodlo sie" << endl;
+    Sleep(1500);
+}
 int main()
 {
-    vector <Przyjaciel> przyjaciele;
+    vector <Uzytkownik> uzytkownicy;
     char wybor;
-    int IloscZnajomych = 0;
-    IloscZnajomych = wczytajDaneZPliku(przyjaciele);
+    int iloscUzytkownikow = 0;
+    iloscUzytkownikow = wczytajDaneZPliku(uzytkownicy);
+
 
     while (1)
     {
-        system("cls");
-        cout << "*************** MENU GLOWNE ***************" << endl;
-        cout << "1. Zapisz znajomego" << endl;
-        cout << "2. Wyszukaj znajomego" << endl;
-        cout << "3. Wyswietl wszystkich znajomych" << endl;
-        cout << "4. Edytuj dane znajomego" << endl;
-        cout << "5. Usun znajomego" << endl;
-        cout << "6. Wyjdz" << endl;
+        system ("cls");
+        cout << "1. Logowanie" << endl;
+        cout << "2. Rejestracja" << endl;
+        cout << "3. Zamknij program" << endl;
         cin >> wybor;
-
         switch(wybor)
         {
         case '1':
-            IloscZnajomych = dodajPrzyjacielaDoBazy(przyjaciele, IloscZnajomych);
+            zaloguj(uzytkownicy, iloscUzytkownikow);
             break;
         case '2':
-            wyszukajPrzyjaciela(przyjaciele, IloscZnajomych);
+            iloscUzytkownikow = zarejestruj(uzytkownicy, iloscUzytkownikow);
             break;
         case '3':
-            wyswietlWszystkichZnajomych(przyjaciele, IloscZnajomych);
-            break;
-        case '4':
-            edytujDaneZnajomego(przyjaciele, IloscZnajomych);
-            break;
-        case '5':
-            IloscZnajomych = usunZnajomego(przyjaciele, IloscZnajomych);
-            break;
-        case '6':
             exit(0);
             break;
         default:
             cout << "Nie podales zadnej opcji z Menu" << endl;
             break;
         }
+
     }
     return 0;
 }

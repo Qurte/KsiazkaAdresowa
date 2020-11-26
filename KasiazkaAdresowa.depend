@@ -7,3 +7,24 @@
 	<vector>
 	<algorithm>
 
+1606410517 source:c:\users\student230217\desktop\kurs programowania\c++\ksiazkaadresowa\main.cpp
+	<iostream>
+	<windows.h>
+	<cstdlib>
+	<cstdio>
+	<fstream>
+	<vector>
+	<algorithm>
+	"PanelLogowania.h"
+
+1606410436 source:c:\users\student230217\desktop\kurs programowania\c++\ksiazkaadresowa\panellogowania.cpp
+	<iostream>
+	"PanelLogowania.h"
+	<fstream>
+	<string>
+	<windows.h>
+
+1606409337 c:\users\student230217\desktop\kurs programowania\c++\ksiazkaadresowa\panellogowania.h
+	<iostream>
+	<vector>
+

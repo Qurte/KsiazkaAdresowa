@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include "PanelLogowania.h"
 
 using namespace std;
 struct Przyjaciel
@@ -619,78 +620,30 @@ int usunZnajomego (vector<Przyjaciel> &przyjaciele, int iloscZnajomych, int idUz
 }
 int zarejestruj (vector <Uzytkownik> &uzytkownicy, int iloscUzytkownikow)
 {
-    string login, haslo;
-    int idUzytkownika;
-    cout << "Podaj login: " << endl;
-    cin >> login;
-    for(int i = 0; i < iloscUzytkownikow; i++)
-    {
-        if(uzytkownicy[i].login == login)
-        {
-            cout << "taki uzytkownik juz istnieje, podaj inny login" <<endl;
-            cin >> login;
-            i = -1;
-        }
-    }
-
-    cout << "Podaj haslo: " << endl;
-    cin >> haslo;
-    idUzytkownika = iloscUzytkownikow + 1;
+    PanelLogowania rejestrujacyUzytkownik;
+    rejestrujacyUzytkownik.zarejestruj(iloscUzytkownikow);
 
     uzytkownicy.push_back(Uzytkownik());
-    uzytkownicy[iloscUzytkownikow].idUzytkownika = idUzytkownika;
-    uzytkownicy[iloscUzytkownikow].login = login;
-    uzytkownicy[iloscUzytkownikow].haslo = haslo;
-
-    fstream BazaUzytkownikow;
-    BazaUzytkownikow.open("ListaUzytkownikow.txt",ios::out | ios::app);
-    BazaUzytkownikow << idUzytkownika << "|";
-    BazaUzytkownikow << login << "|";
-    BazaUzytkownikow << haslo << "|" << endl;
-    BazaUzytkownikow.close();
-
-    cout << "Rejsetracja przebiegla pomyslnie" << endl;
-    Sleep(1500);
+    uzytkownicy[iloscUzytkownikow].idUzytkownika = rejestrujacyUzytkownik.idUzytkownika;
+    uzytkownicy[iloscUzytkownikow].login = rejestrujacyUzytkownik.login;
+    uzytkownicy[iloscUzytkownikow].haslo = rejestrujacyUzytkownik.haslo;
 
     return iloscUzytkownikow +1;
 }
 void zaloguj (vector <Uzytkownik> &uzytkownicy, int iloscUzytkownikow)
 {
-    string login, haslo;
-    int idUzytkownika = 0;
-    bool CzyIstniejeTakiLogin = false;
-    cout << "podaj login" << endl;
-    cin >> login;
-    for(int i = 0; i < iloscUzytkownikow; i++)
+    PanelLogowania logujacyUzytkownik;
+    logujacyUzytkownik.zaloguj(iloscUzytkownikow);
+    char wybor;
+    int idUzytkownika = logujacyUzytkownik.idUzytkownika;
+
+    if (logujacyUzytkownik.czyZalogowano == true)
     {
-        if(uzytkownicy[i].login == login)
-        {
-            CzyIstniejeTakiLogin = true;
-            idUzytkownika = uzytkownicy[i].idUzytkownika;
-            break;
-        }
-    }
-    if (CzyIstniejeTakiLogin == false)
-    {
-        cout << "Nie ma takiego uzytkownika" << endl;
-    }
-    else
-    {
-        cout << "Podaj haslo: " << endl;
-        cin >> haslo;
-        if (uzytkownicy[idUzytkownika - 1].haslo != haslo)
-        {
-            cout << "haslo nie poprawne" << endl;
-        }
-        else
-        {
-            vector <Przyjaciel> przyjaciele;
+        vector <Przyjaciel> przyjaciele;
             int IloscZnajomych = 0;
             IloscZnajomych = wczytajDaneZPliku(przyjaciele, idUzytkownika);
             char wybor;
-            cout << "Zalogowales sie poprawnie" << endl;
-            Sleep(1500);
-            while (1)
+         while (1)
             {
                 system("cls");
                 cout << "*************** MENU GLOWNE ***************" << endl;
@@ -727,10 +680,12 @@ void zaloguj (vector <Uzytkownik> &uzytkownicy, int iloscUzytkownikow)
                     break;
                 }
             }
-        }
     }
-    cout << endl << "logowanie nie powiodlo sie" << endl;
-    Sleep(1500);
+    else
+    {
+        cout << "Logowanie nie powiodlo sie " << endl;
+        Sleep(1500);
+    }
 }
 int main()
 {

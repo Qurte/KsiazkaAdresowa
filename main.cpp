@@ -52,7 +52,7 @@ int wczytajDaneZPliku (vector<Przyjaciel> &przyjaciele, int idUzytkownika)
                     pozycjaKreski = i + 1;
                     id = atoi(buforDanych.c_str());
                     break;
-                 case 2:
+                case 2:
                     buforDanych = liniaOdczytywanaZPliku.substr(pozycjaKreski,i - pozycjaKreski);
                     pozycjaKreski = i + 1;
                     idUzytkownikaWPliku = atoi(buforDanych.c_str());
@@ -640,46 +640,46 @@ void zaloguj (vector <Uzytkownik> &uzytkownicy, int iloscUzytkownikow)
     if (logujacyUzytkownik.czyZalogowano == true)
     {
         vector <Przyjaciel> przyjaciele;
-            int IloscZnajomych = 0;
-            IloscZnajomych = wczytajDaneZPliku(przyjaciele, idUzytkownika);
-            char wybor;
-         while (1)
-            {
-                system("cls");
-                cout << "*************** MENU GLOWNE ***************" << endl;
-                cout << "1. Zapisz znajomego" << endl;
-                cout << "2. Wyszukaj znajomego" << endl;
-                cout << "3. Wyswietl wszystkich znajomych" << endl;
-                cout << "4. Edytuj dane znajomego" << endl;
-                cout << "5. Usun znajomego" << endl;
-                cout << "6. Wyloguj" << endl;
-                cin >> wybor;
+        int IloscZnajomych = 0;
+        IloscZnajomych = wczytajDaneZPliku(przyjaciele, idUzytkownika);
+        char wybor;
+        while (1)
+        {
+            system("cls");
+            cout << "*************** MENU GLOWNE ***************" << endl;
+            cout << "1. Zapisz znajomego" << endl;
+            cout << "2. Wyszukaj znajomego" << endl;
+            cout << "3. Wyswietl wszystkich znajomych" << endl;
+            cout << "4. Edytuj dane znajomego" << endl;
+            cout << "5. Usun znajomego" << endl;
+            cout << "6. Wyloguj" << endl;
+            cin >> wybor;
 
-                switch(wybor)
-                {
-                case '1':
-                    IloscZnajomych = dodajPrzyjacielaDoBazy(przyjaciele, IloscZnajomych, idUzytkownika);
-                    break;
-                case '2':
-                    wyszukajPrzyjaciela(przyjaciele, IloscZnajomych);
-                    break;
-                case '3':
-                    wyswietlWszystkichZnajomych(przyjaciele);
-                    break;
-                case '4':
-                    edytujDaneZnajomego(przyjaciele, idUzytkownika);
-                    break;
-                case '5':
-                    IloscZnajomych = usunZnajomego(przyjaciele, IloscZnajomych, idUzytkownika);
-                    break;
-                case '6':
-                    return;
-                    break;
-                default:
-                    cout << "Nie podales zadnej opcji z Menu" << endl;
-                    break;
-                }
+            switch(wybor)
+            {
+            case '1':
+                IloscZnajomych = dodajPrzyjacielaDoBazy(przyjaciele, IloscZnajomych, idUzytkownika);
+                break;
+            case '2':
+                wyszukajPrzyjaciela(przyjaciele, IloscZnajomych);
+                break;
+            case '3':
+                wyswietlWszystkichZnajomych(przyjaciele);
+                break;
+            case '4':
+                edytujDaneZnajomego(przyjaciele, idUzytkownika);
+                break;
+            case '5':
+                IloscZnajomych = usunZnajomego(przyjaciele, IloscZnajomych, idUzytkownika);
+                break;
+            case '6':
+                return;
+                break;
+            default:
+                cout << "Nie podales zadnej opcji z Menu" << endl;
+                break;
             }
+        }
     }
     else
     {
